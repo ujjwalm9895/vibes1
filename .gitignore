@@ -1,0 +1,6 @@
+*.json
+*.env
+database.db
+__pycache__/
+venv/
+google-credentials.json

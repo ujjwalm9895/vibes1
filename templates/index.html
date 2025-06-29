@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dream Call</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div id="dreamboard">
+    <!-- AI-generated dreams appear here -->
+  </div>
+
+  <div id="main-content">
+    <header>DreamCall ✨</header>
+    
+    <main>
+      <div id="login" class="card">
+        <h2>Login</h2>
+        <input id="username" placeholder="Enter your username" />
+        <button onclick="register()">Connect</button>
+      </div>
+
+      <div id="call-ui" class="card" style="display: none;">
+        <h3>Call someone</h3>
+        <input id="callee" placeholder="Callee's username" />
+        <button onclick="makeCall()">Start Call</button>
+      </div>
+
+      <div id="ringing" class="card" style="display: none;">
+        <h3>📲 Incoming call from <span id="caller"></span></h3>
+        <button onclick="acceptCall()">✅ Accept</button>
+        <button onclick="rejectCall()">❌ Reject</button>
+      </div>
+
+      <div id="in-call" class="card" style="display: none;">
+        <h3>🟢 In call with <span id="inCallWith"></span></h3>
+        <button onclick="endCall()">🛑 End Call</button>
+        <button id="muteButton">🔇 Mute</button>
+      </div>
+
+      <div id="call-summary" class="card">
+        <h3>📋 Summary</h3>
+        <p id="summary-text"></p>
+        <ul id="followups-list"></ul>
+      </div>
+    </main>
+
+    <footer>
+      DreamCall MVP – AI-powered voice creativity over WebRTC
+    </footer>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

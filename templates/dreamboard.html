@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎨 AI Dreamboard</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    button {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    #status {
+      margin-top: 1rem;
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+
+    #dreamboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: #222;
+      padding: 1rem;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 0 15px rgba(0,255,100,0.1);
+    }
+
+    .card img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+
+    .caption {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎙️ AI Dreamboard</h1>
+  <button onclick="toggleRecording()" id="startStopBtn">Start Dreamboard</button>
+  <p id="status">Waiting to start...</p>
+
+  <div id="dreamboard"></div>
+
+  <script>
+    let running = false;
+    let interval;
+
+    function toggleRecording() {
+      running = !running;
+      const btn = document.getElementById("startStopBtn");
+      const status = document.getElementById("status");
+
+      if (running) {
+        btn.innerText = "Stop Dreamboard";
+        status.innerText = "🎧 Dreamboard Recording Started...";
+        capture(); // run once immediately
+        interval = setInterval(capture, 6000); // every 6 seconds
+      } else {
+        btn.innerText = "Start Dreamboard";
+        status.innerText = "⏹️ Dreamboard Paused.";
+        clearInterval(interval);
+      }
+    }
+
+    async function capture() {
+      try {
+        document.getElementById("status").innerText = "🎤 Listening and imagining...";
+        const res = await fetch("/dreamboard-process", { method: "POST" });
+        if (res.status === 204) {
+          document.getElementById("status").innerText = "😶 No speech detected. Listening again...";
+          return;
+        }
+
+        const data = await res.json();
+        if (data.error) {
+          document.getElementById("status").innerText = "❌ Error: " + data.error;
+          return;
+        }
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const img = document.createElement("img");
+        img.src = data.image_url;
+
+        const cap = document.createElement("div");
+        cap.className = "caption";
+        cap.innerText = data.transcription;
+
+        card.appendChild(img);
+        card.appendChild(cap);
+
+        document.getElementById("dreamboard").prepend(card);
+        document.getElementById("status").innerText = "✅ Added new dream!";
+      } catch (err) {
+        document.getElementById("status").innerText = "⚠️ Network error";
+      }
+    }
+  </script>
+</body>
+</html>

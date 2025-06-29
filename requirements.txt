@@ -1,0 +1,6 @@
+flask 
+flask-sock
+python-dotenv
+openai
+google-cloud-speech
+gunicorn
