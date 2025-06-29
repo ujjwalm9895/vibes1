@@ -1,39 +1,56 @@
-name: 🚀 Deploy to Google Cloud Run
+name: Deploy to Google Cloud Run
 
 on:
   push:
-    branches:
-      - main  # Change this if you use a different branch
+    branches: [ main ]  # Or change to your working branch
 
 jobs:
   deploy:
-    name: Build & Deploy
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
+          python-version: '3.10'
 
-      - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev
-
-      - name: Build Docker image
+      - name: 🔐 Decode GCP credentials
         run: |
-          IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/${{ secrets.CLOUD_RUN_SERVICE_NAME }}
+          echo "${{ secrets.GCP_SA_KEY_B64 }}" | base64 -d > ${{ github.workspace }}/gcp-key.json
+
+      - name: 🔑 Auth with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ github.workspace }}/gcp-key.json'
+
+      - name: 🔧 Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: 📦 Configure Docker
+        run: |
+          gcloud auth configure-docker
+
+      - name: 🐳 Build & Push Docker image
+        env:
+          PROJECT_ID: commanding-fact-424707-e8
+          REGION: us-central1
+          SERVICE_NAME: dreamcall-app
+        run: |
+          IMAGE=gcr.io/$PROJECT_ID/$SERVICE_NAME
           docker build -t $IMAGE .
           docker push $IMAGE
 
-      - name: Deploy to Cloud Run
+      - name: 🚀 Deploy to Cloud Run
+        env:
+          PROJECT_ID: commanding-fact-424707-e8
+          REGION: us-central1
+          SERVICE_NAME: dreamcall-app
         run: |
-          gcloud run deploy ${{ secrets.CLOUD_RUN_SERVICE_NAME }} \
-            --image=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/${{ secrets.CLOUD_RUN_SERVICE_NAME }} \
-            --region=${{ secrets.GCP_REGION }} \
-            --platform=managed \
+          gcloud run deploy $SERVICE_NAME \
+            --image gcr.io/$PROJECT_ID/$SERVICE_NAME \
+            --platform managed \
+            --region $REGION \
             --allow-unauthenticated
