@@ -1,9 +1,9 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/vibes1-app', '.']
+    args: ['build', '-t', 'asia-south1-docker.pkg.dev/$PROJECT_ID/vibe-repo/vibes1-app', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/vibes1-app']
+    args: ['push', 'asia-south1-docker.pkg.dev/$PROJECT_ID/vibe-repo/vibes1-app']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: bash
@@ -12,13 +12,13 @@ steps:
       - |
         gcloud compute ssh dreamcall-vm \
           --zone=asia-south1-c \
-          --command="sudo docker pull gcr.io/$PROJECT_ID/vibes1-app &&
+          --command="sudo docker pull asia-south1-docker.pkg.dev/$PROJECT_ID/vibe-repo/vibes1-app &&
                      sudo docker stop vibes1-container || true &&
                      sudo docker rm vibes1-container || true &&
-                     sudo docker run -d --name vibes1-container -p 80:5000 gcr.io/$PROJECT_ID/vibes1-app"
+                     sudo docker run -d --name vibes1-container -p 80:5000 asia-south1-docker.pkg.dev/$PROJECT_ID/vibe-repo/vibes1-app"
 
 images:
-  - 'gcr.io/$PROJECT_ID/vibes1-app'
+  - 'asia-south1-docker.pkg.dev/$PROJECT_ID/vibe-repo/vibes1-app'
 
 options:
   logging: CLOUD_LOGGING_ONLY
