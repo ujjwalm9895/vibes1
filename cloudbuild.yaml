@@ -7,7 +7,7 @@ steps:
 
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
-      'compute', 'instances', 'update-container', 'dreamcall-vm',
+      'compute', 'instances', 'update-container', 'dreamcall-app',
       '--container-image', 'gcr.io/$PROJECT_ID/dreamcall-app',
       '--zone', 'asia-south1-c'
     ]
@@ -16,4 +16,4 @@ images:
   - 'gcr.io/$PROJECT_ID/dreamcall-app'
 
 options:
-  logging: CLOUD_LOGGING_ONLY   # ✅ This line fixes your error
+  logging: CLOUD_LOGGING_ONLY  # ✅ This fixes the build.service_account/logs_bucket error
