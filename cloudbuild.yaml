@@ -12,7 +12,7 @@ steps:
     args:
       - compute
       - ssh
-      - dreamcall-vm
+      - dreamcall-ap
       - --zone=asia-south1-c
       - --command
       - |
