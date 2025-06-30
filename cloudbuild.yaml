@@ -12,10 +12,10 @@ steps:
       - |
         gcloud compute ssh dreamcall-vm \
           --zone=asia-south1-c \
-          --command="docker pull gcr.io/$PROJECT_ID/vibes1-app &&
-                     docker stop vibes1-container || true &&
-                     docker rm vibes1-container || true &&
-                     docker run -d --name vibes1-container -p 80:5000 gcr.io/$PROJECT_ID/vibes1-app"
+          --command="sudo docker pull gcr.io/$PROJECT_ID/vibes1-app &&
+                     sudo docker stop vibes1-container || true &&
+                     sudo docker rm vibes1-container || true &&
+                     sudo docker run -d --name vibes1-container -p 80:5000 gcr.io/$PROJECT_ID/vibes1-app"
 
 images:
   - 'gcr.io/$PROJECT_ID/vibes1-app'
