@@ -9,7 +9,7 @@ steps:
     args: [
       'compute', 'instances', 'update-container', 'dreamcall-vm',
       '--container-image', 'gcr.io/$PROJECT_ID/dreamcall-app',
-      '--zone', 'asia-south1-a'
+      '--zone', 'asia-south1-c'  # ✅ this must match your VM
     ]
 
 images:
