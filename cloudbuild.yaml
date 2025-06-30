@@ -1,0 +1,16 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/dreamcall-app', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/dreamcall-app']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+      'compute', 'instances', 'update-container', 'dreamcall-vm',
+      '--container-image', 'gcr.io/$PROJECT_ID/dreamcall-app',
+      '--zone', 'asia-south1-a'
+    ]
+
+images:
+  - 'gcr.io/$PROJECT_ID/dreamcall-app'
