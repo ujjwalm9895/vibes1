@@ -9,8 +9,11 @@ steps:
     args: [
       'compute', 'instances', 'update-container', 'dreamcall-vm',
       '--container-image', 'gcr.io/$PROJECT_ID/dreamcall-app',
-      '--zone', 'asia-south1-c'  # ✅ this must match your VM
+      '--zone', 'asia-south1-c'
     ]
 
 images:
   - 'gcr.io/$PROJECT_ID/dreamcall-app'
+
+options:
+  logging: CLOUD_LOGGING_ONLY   # ✅ This line fixes your error
