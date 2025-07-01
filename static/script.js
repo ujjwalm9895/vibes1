@@ -12,7 +12,6 @@ function register() {
   // ws = new WebSocket("ws://localhost:5000/ws");
   ws = new WebSocket("wss://vibes1.onrender.com/ws");
 
-
   ws.onopen = () => {
     ws.send(JSON.stringify({ type: "register", user: myId }));
     document.getElementById("login").style.display = "none";
