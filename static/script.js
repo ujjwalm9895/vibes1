@@ -9,7 +9,8 @@ function register() {
   myId = document.getElementById("username").value.trim();
   if (!myId) return alert("Enter a valid username.");
 
-  ws = new WebSocket("ws://localhost:5000/ws");
+  // ws = new WebSocket("ws://localhost:5000/ws");
+  ws = new WebSocket("wss://vibes1.onrender.com/ws");
 
   ws.onopen = () => {
     ws.send(JSON.stringify({ type: "register", user: myId }));
@@ -261,13 +262,18 @@ async function handleSignal(data) {
 function addSlide(image, text) {
   const board = document.getElementById("dreamboard");
 
-  // ❌ Remove all old slides
+  // Clear previous content
   board.innerHTML = "";
 
-  // ✅ Add only latest slide
+  // Create new dream slide
   const slide = document.createElement("div");
   slide.className = "dream fade-in";
-  slide.innerHTML = `<p><b>${text}</b></p><img src="${image}" alt="dream" />`;
+
+  // Only show the heading and image (ignore text completely)
+  slide.innerHTML = `
+    <h2 style="text-align:center; margin-bottom: 10px;">Dreamboard</h2>
+    <img src="${image}" alt="dream" style="max-width:100%; border-radius: 10px;" />
+  `;
 
   board.appendChild(slide);
   board.scrollTo({ top: 0, behavior: "smooth" });
