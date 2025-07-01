@@ -5,6 +5,16 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import tempfile, os, json
 from models import init_db, get_db  # ✅ DB setup
+import os
+import base64
+
+# Decode GCP credentials and write them to a JSON file
+creds_b64 = os.environ.get("GOOGLE_CREDENTIALS_BASE64")
+if creds_b64:
+    with open("google-credentials.json", "wb") as f:
+        f.write(base64.b64decode(creds_b64))
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google-credentials.json"
+
 
 # ENV and OpenAI setup
 load_dotenv()
@@ -121,15 +131,16 @@ def generate_summary(call_id):
         full_text = "\n".join([r["text"] for r in rows])
 
         prompt = f"""
-You are an assistant that summarizes conversations. Here's a full transcript:
+You are an assistant that summarizes human conversations based on transcripts.
 
+Conversation Transcript:
 \"\"\"
 {full_text}
 \"\"\"
 
-Provide:
-1. A concise summary (2-4 lines)
-2. Three follow-up suggestions or creative ideas that emerged
+Provide the following clearly:
+1. Summary: 2–4 lines summarizing the conversation.
+2. Follow-up Suggestions: A bulleted list of 3 creative or actionable ideas based on the discussion.
 """
 
         completion = openai.chat.completions.create(
@@ -140,11 +151,13 @@ Provide:
 
         response_text = completion.choices[0].message.content.strip()
 
-        # Extract summary and follow-ups
+        # ✅ Improved parsing logic
         import re
-        summary_match = re.search(r"1\..*?\n(.+?)(?:\n|$)", response_text, re.DOTALL)
-        followups = re.findall(r"- (.+)", response_text)
-        summary = summary_match.group(1).strip() if summary_match else response_text
+        sections = re.split(r"\n\s*\d\.\s*", response_text)
+        summary = sections[1].strip() if len(sections) > 1 else response_text
+
+        followups_section = next((s for s in sections if "follow" in s.lower()), "")
+        followups = re.findall(r"- (.+)", followups_section)
 
         # ✅ Save to DB
         try:
