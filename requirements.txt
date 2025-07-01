@@ -1,6 +1,6 @@
-flask
+Flask
 flask-sock
-gunicorn
-openai
 python-dotenv
+openai
 google-cloud-speech
+hypercorn
